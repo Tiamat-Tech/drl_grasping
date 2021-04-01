@@ -1,4 +1,3 @@
-from drl_grasping.control import MoveIt2
 from drl_grasping.utils.math import quat_mul
 from drl_grasping.utils.conversions import orientation_6d_to_quat
 from gym_ignition.base import task
@@ -86,15 +85,26 @@ class Manipulation(task.Task, abc.ABC):
                  agent_rate: float,
                  restrict_position_goal_to_workspace: bool,
                  verbose: bool,
+                 robot_controller_backend: str = "moveit2",
                  **kwargs):
         # Add to ids
         self.id = next(self._ids)
 
         # Initialize the Task base class
-        task.Task.__init__(self, agent_rate=agent_rate)
+        task.Task.__init__(self, agent_rate=agent_rate, **kwargs)
 
         # Control (MoveIt2)
-        self.moveit2 = MoveIt2(node_name=f'ign_moveit2_py_{self.id}')
+        self.robot_controller_backend_id = robot_controller_backend
+        if "moveit2" == robot_controller_backend:
+            from drl_grasping.control import MoveIt2
+            self.robot_controller = MoveIt2(
+                node_name=f'ign_moveit2_py_{self.id}')
+        elif "frankx" == robot_controller_backend:
+            from drl_grasping.control import PandaControl
+            self.robot_controller = PandaControl()
+        else:
+            raise Exception(
+                f"Unsupported robot controller backend '{robot_controller_backend}'. Please select 'moveit2' (for simulation) or 'frankx' (for real-life Franka Emika Panda).")
 
         # Names of important models
         self.robot_name = None
@@ -178,7 +188,7 @@ class Manipulation(task.Task, abc.ABC):
                                         max(centre[i] - volume[i]/2,
                                             target_pos[i]))
             # Set position goal
-            self.moveit2.set_position_goal(target_pos)
+            self.robot_controller.set_position_goal(target_pos)
         else:
             print('error: Neither absolute or relative position is set')
 
@@ -243,19 +253,29 @@ class Manipulation(task.Task, abc.ABC):
             # Normalise quaternion (should not be needed, but just to be safe)
             target_quat_xyzw /= np.linalg.norm(target_quat_xyzw)
             # Set orientation goal
-            self.moveit2.set_orientation_goal(target_quat_xyzw)
+            self.robot_controller.set_orientation_goal(target_quat_xyzw)
         else:
             print('error: Neither absolute or relative orientation is set')
 
     def get_ee_position(self) -> Tuple[float, float, float]:
 
+        if "frankx" == self.robot_controller_backend_id:
+            # If using a real robot, use the corresponding backend
+            return self.robot_controller.get_ee_position()
+
+        # Else use simulation params (Gazebo lookup is much faster than MoveIt2 forward kinematics)
         robot = self.world.get_model(self.robot_name).to_gazebo()
         return robot.get_link(self.robot_ee_link_name).position()
 
     def get_ee_orientation(self) -> Tuple[float, float, float, float]:
         """
-        Return the current wxyz quaternion of the end effector
+        Return the current xyzw quaternion of the end effector
         """
 
+        if "frankx" == self.robot_controller_backend_id:
+            # If using a real robot, use the corresponding backend
+            return self.robot_controller.get_ee_orientation()
+
+        # Else use simulation params (Gazebo lookup is much faster than MoveIt2 forward kinematics)
         robot = self.world.get_model(self.robot_name).to_gazebo()
         return conversions.Quaternion.to_xyzw(robot.get_link(self.robot_ee_link_name).orientation())

@@ -175,10 +175,10 @@ class Grasp(Manipulation, abc.ABC):
         # gripper_action = action['gripper_action']
         gripper_action = action[0]
         if gripper_action < -self._gripper_dead_zone:
-            self.moveit2.gripper_close(manual_plan=True)
+            self.robot_controller.gripper_close(manual_plan=True)
             self._gripper_state = -1.0
         elif gripper_action > self._gripper_dead_zone:
-            self.moveit2.gripper_open(manual_plan=True)
+            self.robot_controller.gripper_open(manual_plan=True)
             self._gripper_state = 1.0
         else:
             # No-op for the gripper as it is in the dead zone
@@ -199,8 +199,8 @@ class Grasp(Manipulation, abc.ABC):
                 relative=orientation_z, representation='z')
 
         # Plan and execute motion to target pose
-        self.moveit2.plan_kinematic_path(allowed_planning_time=0.1)
-        self.moveit2.execute()
+        self.robot_controller.plan_path(allowed_planning_time=0.1)
+        self.robot_controller.execute()
 
     def get_observation(self) -> Observation:
 
@@ -237,7 +237,8 @@ class Grasp(Manipulation, abc.ABC):
 
     def reset_task(self):
 
-        self.curriculum.reset_task()
+        if "moveit2" == self.robot_controller_backend_id:
+            self.curriculum.reset_task()
 
         self._gripper_state = 1.0
 

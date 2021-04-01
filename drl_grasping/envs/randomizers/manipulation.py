@@ -401,7 +401,7 @@ class ManipulationGazeboEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
             raise RuntimeError("Failed to reset robot joint velocities")
 
         # Send new positions also to the controller
-        task.moveit2.move_to_joint_positions(joint_positions[:-finger_count])
+        task.robot_controller.move_to_joint_positions(joint_positions[:-finger_count])
 
     def reset_robot_joint_positions(self,
                                     task: SupportedTasks):
@@ -414,7 +414,7 @@ class ManipulationGazeboEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
 
         # Send new positions also to the controller
         finger_count = models.Panda.get_finger_count()
-        task.moveit2.move_to_joint_positions(
+        task.robot_controller.move_to_joint_positions(
             task._robot_initial_joint_positions[:-finger_count])
 
     def randomize_camera_pose(self,
