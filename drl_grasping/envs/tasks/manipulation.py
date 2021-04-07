@@ -91,7 +91,7 @@ class Manipulation(task.Task, abc.ABC):
         self.id = next(self._ids)
 
         # Initialize the Task base class
-        task.Task.__init__(self, agent_rate=agent_rate, **kwargs)
+        task.Task.__init__(self, agent_rate=agent_rate)
 
         # Control (MoveIt2)
         self.robot_controller_backend_id = robot_controller_backend

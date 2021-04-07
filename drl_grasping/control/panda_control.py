@@ -1,4 +1,4 @@
-from frankx import Affine, Robot, Measure, Reaction, MotionData, LinearMotion, JointMotion, LinearRelativeMotion
+from frankx import Affine, Robot, Measure, Reaction, MotionData, LinearMotion, JointMotion, StopMotion
 from gym_ignition.rbd import conversions
 from scipy.spatial.transform import Rotation
 from typing import Tuple
@@ -24,17 +24,16 @@ class PandaControl():
 
         self.robot = Robot(fci_ip=fci_ip,
                            enforce_rt=enforce_rt)
-
         self.robot.set_default_behavior()
         self.robot.set_dynamic_rel(dynamic_rel)
         self.robot.recover_from_errors()
 
         self.gripper = self.robot.get_gripper()
-
         self.gripper.gripper_speed = gripper_speed
         self.gripper.gripper_force = gripper_force
 
         self._home_joint_positions = home_joint_positions
+        self.set_reaction()
 
     def set_position_goal(self, position_goal: Tuple[float, float, float]):
         self._position_goal = Affine(position_goal[0],
@@ -55,12 +54,10 @@ class PandaControl():
         self.plan_linear_path(**kwargs)
 
     def plan_linear_path(self, **kwargs):
-
         pose_goal = self._position_goal * self._orientation_goal
         self._motion = LinearMotion(pose_goal)
 
     def execute(self):
-
         if self._reaction is None:
             self.robot.move(self._motion)
         else:
@@ -78,10 +75,11 @@ class PandaControl():
         self.execute()
 
     def set_reaction(self, max_force_neg_z: float = 5.0, upwards_distance: float = 0.01):
-        reaction_motion = LinearRelativeMotion(
-            Affine(0.0, 0.0, upwards_distance))
-        self._reaction = MotionData().with_reaction(Reaction(Measure.ForceZ() < -max_force_neg_z),
-                                                    reaction_motion)
+        self._reaction = MotionData().with_reaction(Reaction(Measure.ForceZ < -max_force_neg_z,
+                                                             StopMotion(Affine(0.0,
+                                                                               0.0,
+                                                                               upwards_distance),
+                                                                        0.0)))
 
     def disable_reaction(self):
         self._reaction = None
@@ -105,7 +103,6 @@ class PandaControl():
         print('Elbow:  ', state.elbow)
 
     def get_ee_position(self) -> Tuple[float, float, float]:
-
         self.robot.read_once()
         return self.robot.current_pose().vector()[:3]
 
@@ -113,7 +110,6 @@ class PandaControl():
         """
         Return the current xyzw quaternion of the end effector
         """
-
         self.robot.read_once()
         rot_euler_xyz = self.robot.current_pose().angles()
         return Rotation.from_euler(angles=rot_euler_xyz, seq='xyz', degrees=False).as_quat()

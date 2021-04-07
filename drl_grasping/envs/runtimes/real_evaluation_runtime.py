@@ -11,7 +11,7 @@ import sys
 import time
 
 
-class RealManualEvaluationRuntime(runtime.Runtime):
+class RealEvaluationRuntimeManual(runtime.Runtime):
     """
      Implementation of :py:class:`~gym_ignition.base.runtime.Runtime` for execution
      on trained agent on real-life Franka Emika Panda (evaluation only!!!).
@@ -160,6 +160,12 @@ class RealManualEvaluationRuntime(runtime.Runtime):
         # Seed the task
         seed = self.task.seed_task(seed)
         return seed
+
+    def render(self, mode='human'):
+        pass
+
+    def close(self):
+        pass
 
     def on_press(self, key):
         print('')
