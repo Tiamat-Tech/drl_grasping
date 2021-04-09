@@ -245,5 +245,5 @@ Grasp-OctreeWithColor-Gazebo-v0:
   train_freq: 1
   gradient_steps: 2
   noise_type: "normal"
-  noise_std: 0.05
+  noise_std: 0.1
   optimize_memory_usage: True
