@@ -47,7 +47,8 @@ class Reach(Manipulation, abc.ABC):
                  sparse_reward: bool,
                  act_quick_reward: float,
                  required_accuracy: float,
-                 verbose: bool,
+                 use_sim_time: float = True,
+                 verbose: bool = False,
                  **kwargs):
 
         # Initialize the Task base class

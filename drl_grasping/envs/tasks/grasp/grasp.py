@@ -84,8 +84,9 @@ class Grasp(Manipulation, abc.ABC):
                  curriculum_skip_grasp_stage: bool,
                  curriculum_restart_exploration_at_start: bool,
                  max_episode_length: int,
-                 verbose: bool,
                  preload_replay_buffer: bool = False,
+                 use_sim_time: float = True,
+                 verbose: bool = False,
                  **kwargs):
 
         # Initialize the Task base class

@@ -87,8 +87,9 @@ class GraspOctree(Grasp, abc.ABC):
                  octree_n_stacked: int,
                  octree_max_size: int,
                  proprieceptive_observations: bool,
-                 verbose: bool,
                  preload_replay_buffer: bool = False,
+                 use_sim_time: bool = True,
+                 verbose: bool = False,
                  **kwargs):
 
         # Initialize the Task base class
@@ -121,8 +122,9 @@ class GraspOctree(Grasp, abc.ABC):
                        curriculum_skip_grasp_stage=curriculum_skip_grasp_stage,
                        curriculum_restart_exploration_at_start=curriculum_restart_exploration_at_start,
                        max_episode_length=max_episode_length,
-                       verbose=verbose,
                        preload_replay_buffer=preload_replay_buffer,
+                       use_sim_time=use_sim_time,
+                       verbose=verbose,
                        **kwargs)
 
         if octree_include_color:
@@ -133,6 +135,7 @@ class GraspOctree(Grasp, abc.ABC):
         # Perception (RGB-D camera - point cloud)
         self.camera_sub = CameraSubscriber(topic=f'/{self._camera_type}/points',
                                            is_point_cloud=True,
+                                           use_sim_time=use_sim_time,
                                            node_name=f'drl_grasping_point_cloud_sub_{self.id}')
 
         self.octree_creator = OctreeCreator(min_bound=self._octree_min_bound,
@@ -140,7 +143,7 @@ class GraspOctree(Grasp, abc.ABC):
                                             depth=octree_depth,
                                             full_depth=octree_full_depth,
                                             include_color=octree_include_color,
-                                            use_sim_time=True,
+                                            use_sim_time=use_sim_time,
                                             debug_draw=False,
                                             debug_write_octree=False,
                                             node_name=f'drl_grasping_octree_creator_{self.id}')

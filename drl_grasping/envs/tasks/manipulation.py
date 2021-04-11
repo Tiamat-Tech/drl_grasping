@@ -84,8 +84,8 @@ class Manipulation(task.Task, abc.ABC):
     def __init__(self,
                  agent_rate: float,
                  restrict_position_goal_to_workspace: bool,
-                 verbose: bool,
                  robot_controller_backend: str = "moveit2",
+                 verbose: bool = False,
                  **kwargs):
         # Add to ids
         self.id = next(self._ids)
@@ -98,6 +98,7 @@ class Manipulation(task.Task, abc.ABC):
         if "moveit2" == robot_controller_backend:
             from drl_grasping.control import MoveIt2
             self.robot_controller = MoveIt2(
+                use_sim_time=True,
                 node_name=f'ign_moveit2_py_{self.id}')
         elif "frankx" == robot_controller_backend:
             from drl_grasping.control import PandaControl

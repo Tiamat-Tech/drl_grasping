@@ -116,6 +116,7 @@ class ManipulationGazeboEnvRandomizer(gazebo_env_randomizer.GazeboEnvRandomizer,
             # TODO (low priority): TF2 - Move this to task
             # Broadcaster of tf (world -> robot, world -> camera)
             self._tf2_broadcaster = Tf2Broadcaster(
+                use_sim_time=True,
                 node_name=f'drl_grasping_camera_tf_broadcaster_{task.id}')
 
             # Initialise all models and world plugins
