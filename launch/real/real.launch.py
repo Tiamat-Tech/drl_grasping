@@ -1,4 +1,4 @@
-"""TODO"""
+"""Launch setup for real world evaluation of agents trained inside simulation."""
 
 import os
 from ament_index_python.packages import get_package_share_directory
@@ -32,15 +32,37 @@ def generate_launch_description():
             default_value=log_level,
             description="Log level of all nodes launched by this script"),
 
-        # MoveIt2 move_group action server with necessary ROS2 <-> Ignition bridges
+        # Launch camera
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
                 [os.path.join(get_package_share_directory('drl_grasping'),
-                              'launch', 'real','camera.launch.py')]),
+                              'launch', 'real', 'camera.launch.py')]),
             launch_arguments=[('use_sim_time', use_sim_time),
                               ('log_level', log_level)]),
 
+        # Transformation (world <-> panda)
+        Node(
+            package='tf2_ros',
+            node_executable='static_transform_publisher',
+            node_name='static_transform_publisher_panda',
+            node_namespace='',
+            output='screen',
+            parameters=[],
+            arguments=['0.0', '0.0', '0.0',
+                       '0.0', '0.0', '0.0',
+                       'world', 'panda_link0'],
+            remappings=[],
+        ),
 
-        # TODO: Add robot tf (w.r.t robot_base/world)
-
+        # RViz2
+        Node(
+            package='rviz2',
+            node_executable='rviz2',
+            node_name='rviz2',
+            node_namespace='',
+            output='screen',
+            parameters=[{'use_sim_time': use_sim_time}],
+            arguments=['--display-config', config_rviz2],
+            remappings=[],
+        )
     ])
