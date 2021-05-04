@@ -1,24 +1,24 @@
 /rs_camera:
   camera:
     ros__parameters:
-      serial_no: 000000000000 # TODO: Serial
+      serial_no: 827112072702
       base_frame_id: rs_camera
       align_depth: true
       enable_pointcloud: true
       dense_pointcloud: true
       color0:
         enabled: true
-        resolution: [424, 240]
+        resolution: [640, 480]
         fps: 15
       depth0:
         enabled: true
-        resolution: [424, 240]
+        resolution: [640, 480]
         fps: 15
       infra1:
         enabled: false
-        resolution: [424, 240]
-        fps: 30
+        resolution: [640, 480]
+        fps: 15
       infra2:
         enabled: false
-        resolution: [424, 240]
-        fps: 30
+        resolution: [640, 480]
+        fps: 15
