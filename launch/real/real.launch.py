@@ -54,15 +54,36 @@ def generate_launch_description():
             remappings=[],
         ),
 
-        # RViz2
-        Node(
-            package='rviz2',
-            node_executable='rviz2',
-            node_name='rviz2',
-            node_namespace='',
-            output='screen',
-            parameters=[{'use_sim_time': use_sim_time}],
-            arguments=['--display-config', config_rviz2],
-            remappings=[],
-        )
+        # # RViz2
+        # Node(
+        #     package='rviz2',
+        #     node_executable='rviz2',
+        #     node_name='rviz2',
+        #     node_namespace='',
+        #     output='screen',
+        #     arguments=['--display-config', config_rviz2],
+        #     parameters=[robot_description,
+        #                 robot_description_semantic,
+        #                 kinematics,
+        #                 {'use_sim_time': use_sim_time}])
+
+        # MoveIt2 move_group action server
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                [os.path.join(get_package_share_directory('panda_moveit2_config'),
+                              'launch', 'move_group_action_server.launch.py')]),
+            launch_arguments=[('use_sim_time', use_sim_time),
+                              ('config_rviz2', config_rviz2),
+                              ('log_level', log_level)]),
     ])
+
+## For testing purposes (when robot is not connected)
+# ros2 topic pub --once /joint_states sensor_msgs/msg/JointState "header:
+#   stamp:
+#     sec: $(date '+%s')
+#     nanosec: $(date '+%N')
+#   frame_id: 'world'
+# name: [panda_joint1, panda_joint2, panda_joint3, panda_joint4, panda_joint5, panda_joint6, panda_joint7, panda_finger_joint1, panda_finger_joint2]
+# position: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+# velocity: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+# effort: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]"
