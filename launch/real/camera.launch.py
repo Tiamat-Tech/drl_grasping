@@ -38,9 +38,7 @@ def generate_launch_description():
             node_namespace="/rs_camera",
             output='screen',
             parameters=[config_rs_camera],
-            remappings=[('rs_camera/camera/pointcloud', 'rgbd_camera/points'),
-                        ('rs_camera/camera/image_raw', 'rgbd_camera/image'),
-                        ('rs_camera/camera/aligned_depth_to_color/image_raw', 'rgbd_camera/depth_image')],
+            remappings=[('camera/pointcloud', '/rgbd_camera/points')],
         ),
 
         # Transformation (world <-> rs_camera)
