@@ -85,6 +85,7 @@ class Grasp(Manipulation, abc.ABC):
                  curriculum_restart_exploration_at_start: bool,
                  max_episode_length: int,
                  preload_replay_buffer: bool = False,
+                 robot_controller_backend: str = "moveit2",
                  use_sim_time: float = True,
                  verbose: bool = False,
                  **kwargs):
@@ -121,6 +122,8 @@ class Grasp(Manipulation, abc.ABC):
                                           skip_grasp_stage=curriculum_skip_grasp_stage,
                                           restart_exploration_at_start=curriculum_restart_exploration_at_start,
                                           max_episode_length=max_episode_length,
+                                          robot_controller_backend=robot_controller_backend,
+                                          use_sim_time = use_sim_time,
                                           verbose=verbose)
 
         # Additional parameters

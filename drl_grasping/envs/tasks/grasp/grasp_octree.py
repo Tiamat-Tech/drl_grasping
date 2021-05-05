@@ -88,6 +88,7 @@ class GraspOctree(Grasp, abc.ABC):
                  octree_max_size: int,
                  proprieceptive_observations: bool,
                  preload_replay_buffer: bool = False,
+                 robot_controller_backend: str = "moveit2",
                  use_sim_time: bool = True,
                  verbose: bool = False,
                  **kwargs):
@@ -123,6 +124,7 @@ class GraspOctree(Grasp, abc.ABC):
                        curriculum_restart_exploration_at_start=curriculum_restart_exploration_at_start,
                        max_episode_length=max_episode_length,
                        preload_replay_buffer=preload_replay_buffer,
+                       robot_controller_backend=robot_controller_backend,
                        use_sim_time=use_sim_time,
                        verbose=verbose,
                        **kwargs)

@@ -2,6 +2,7 @@ from frankx import Affine, Robot, Measure, Reaction, MotionData, LinearMotion, J
 from gym_ignition.rbd import conversions
 from scipy.spatial.transform import Rotation
 from typing import Tuple
+import time
 
 
 # Note: Requires https://github.com/AndrejOrsula/frankx/tree/ignore_rt_kernel branch that enables libfranka without enforcing PREEMPT_RT kernel
@@ -34,6 +35,9 @@ class PandaControl():
 
         self._home_joint_positions = home_joint_positions
         self.set_reaction()
+        
+        # A small delay to get everything setup properly before continuing
+        time.sleep(2)
 
     def set_position_goal(self, position_goal: Tuple[float, float, float]):
         self._position_goal = Affine(position_goal[0],

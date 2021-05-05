@@ -140,8 +140,8 @@ register(
             'verbose': False})
 register(
     id='Grasp-OctreeWithColor-Gazebo-v0',
-    entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
-    # entry_point='drl_grasping.envs.runtimes.RealManualEvaluationRuntime',
+    # entry_point='gym_ignition.runtimes.gazebo_runtime:GazeboRuntime',
+    entry_point='drl_grasping.envs.runtimes.RealManualEvaluationRuntime',
     max_episode_steps=GRASP_MAX_EPISODE_STEPS,
     kwargs={'task_cls': GraspOctree,
             'agent_rate': GRASP_AGENT_RATE,
@@ -182,4 +182,6 @@ register(
             'proprieceptive_observations': True,
             # Important: 'preload_replay_buffer' can only be enabled if using demonstrations to fill replay buffer. Make sure this is disabled otherwise
             # 'preload_replay_buffer': False,
+            'use_sim_time': False,
+            'robot_controller_backend': "frankx",
             'verbose': False})
